@@ -1,71 +1,185 @@
-# Taller RAG con Solr y Milvus — Entrega funcional
 
-Este repositorio implementa dos pipelines RAG: léxico con **Apache Solr** y vectorial con **Milvus**, expuestos por una **API unificada (FastAPI)**. Incluye scripts de conversión/indexación y un evaluador con métricas.
+# 🧠 Taller RAG con Solr y Milvus — Entrega funcional
 
-## Estructura
-- `/data/corpus/`: CSV original y JSONL generado.
-- `/services/api/`: API FastAPI (Solr & Milvus).
-- `/services/indexer/`: convertir CSV → JSONL, indexar en Solr/Milvus, evaluar.
-- `/services/solr/`: schema y script opcional de inicialización.
-- `/services/milvus/`: notas de colección.
-- `/reports/`: resultados del evaluador.
+Este repositorio implementa dos pipelines **RAG (Retrieval-Augmented Generation)**:
 
-## Requisitos
-- Docker y Docker Compose.
-- Python 3.10+ (para ejecutar los indexadores/evaluador desde host).
-- `data/corpus/corpus_bloques_100.csv`.
+* **Léxico (BM25)** con **Apache Solr**
+* **Vectorial (embeddings)** con **Milvus**
 
-## Pasos
-1. **Levantar servicios**
+Ambos se exponen mediante una **API unificada (FastAPI)**.
+Incluye scripts para **conversión, indexación y evaluación** del desempeño de recuperación.
+
+---
+
+## 📁 Estructura del proyecto
+
+```
+rag-solr-milvus/
+├── data/
+│   └── corpus/
+│       ├── corpus_bloques_100.csv      # Corpus original
+│       └── corpus_texto.jsonl          # Generado tras conversión
+├── services/
+│   ├── api/                            # API FastAPI (Solr & Milvus)
+│   ├── indexer/                        # Scripts de conversión, indexación y evaluación
+│   ├── solr/                           # Configuración (schema, core)
+│   └── milvus/                         # Notas sobre la colección
+├── reports/                            # Resultados del evaluador
+├── docker-compose.yml
+└── README.md
+```
+
+---
+
+## ⚙️ Requisitos previos
+
+* 🐳 **Docker** y **Docker Compose**
+* 🐍 **Python 3.10+** (solo si deseas ejecutar scripts de indexación o evaluación desde el host)
+* Archivo de datos:
+  `data/corpus/corpus_bloques_100.csv`
+
+---
+
+## 🚀 Pasos para ejecución
+
+### 1️⃣ Levantar los servicios
+
+Desde la raíz del proyecto:
+
+```bash
 docker compose up -d --build
+```
 
+Esto iniciará los contenedores de:
 
-2. Preparar e indexar
+* `solr` (BM25)
+* `milvus`, `etcd`, `minio` (vectorial)
+* `api` (FastAPI unificada)
+
+Verifica el estado:
+
+```bash
+docker ps
+```
+
+---
+
+### 2️⃣ Preparar e indexar datos
+
+Instala dependencias de los scripts:
+
+```bash
 pip install -r services/indexer/requirements.txt
+```
 
-python services/indexer/convertir_csv.py `
-  --input data/corpus/corpus_bloques_100.csv `
-  --output data/corpus/corpus_texto.jsonl `
+#### 🔹 Convertir CSV → JSONL
+
+```bash
+python services/indexer/convertir_csv.py ^
+  --input data/corpus/corpus_bloques_100.csv ^
+  --output data/corpus/corpus_texto.jsonl ^
   --text-col texto_limpio
+```
 
-python services/indexer/indexar_solr.py `
-  --solr http://localhost:8983/solr/rag2 `
+#### 🔹 Indexar en Solr
+
+```bash
+python services/indexer/indexar_solr.py ^
+  --solr http://localhost:8983/solr/rag2 ^
   --input data/corpus/corpus_texto.jsonl
+```
 
---solr http://localhost:8983/solr/rag2
+#### 🔹 Indexar en Milvus
 
-python services/indexer/index_milvus.py --host localhost --port 19530
+```bash
+python services/indexer/index_milvus.py ^
+  --input data/corpus/corpus_texto.jsonl ^
+  --host localhost ^
+  --port 19530
+```
 
-3. Probar API
+---
 
-curl "http://localhost:8000/ask?query=paz%20territorial&backend=solr&k=3"
-curl "http://localhost:8000/ask?query=paz%20territorial&backend=milvus&k=3"
+### 3️⃣ Probar la API
 
-4.Evaluar
+#### ✅ Salud del servicio
 
-# Evaluar Solr
-python services/indexer/evaluator.py \
-  --backend solr \
-  --queries data/corpus/queries.jsonl \
-  --gold data/corpus/gold.jsonl \
+```bash
+curl http://localhost:8000/health
+```
+
+#### 🔍 Consultar Solr (BM25)
+
+```bash
+curl "http://localhost:8000/solr?q=paz territorial&k=5"
+```
+
+#### 🔎 Consultar Milvus (vectorial)
+
+```bash
+curl "http://localhost:8000/milvus?q=paz territorial&k=5"
+```
+
+📘 **Documentación interactiva (Swagger):**
+👉 [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+### 4️⃣ Evaluar desempeño
+
+#### 📊 Evaluar Solr
+
+```bash
+python services/indexer/evaluator.py ^
+  --backend solr ^
+  --queries data/corpus/queries.jsonl ^
+  --gold data/corpus/gold.jsonl ^
   --k 5
+```
 
-Solr: http://localhost:8983
+#### 📈 Evaluar Milvus
 
-API: http://localhost:8000/docs
-
-# Evaluar Milvus
-python services/indexer/evaluator.py \
-  --backend milvus \
-  --queries data/corpus/queries.jsonl \
-  --gold data/corpus/gold.jsonl \
+```bash
+python services/indexer/evaluator.py ^
+  --backend milvus ^
+  --queries data/corpus/queries.jsonl ^
+  --gold data/corpus/gold.jsonl ^
   --k 5
+```
 
-Resultados en /reports.
+📂 Los resultados se guardarán en:
 
-Notas
-Solr usa el campo text (schema en /services/solr/schema.json).
-Milvus usa colección corpus_rag con campos: id (PK), embedding (FLOAT_VECTOR dim=384), text.
+```
+/reports/
+```
 
+---
 
+## 🧩 Notas técnicas
+
+* **Solr** usa el campo `text` (definido en `services/solr/schema.json`).
+* **Milvus** utiliza la colección `corpus_rag` con los campos:
+
+  * `id` → Clave primaria
+  * `embedding` → `FLOAT_VECTOR (dim=384)`
+  * `text` → texto del documento
+
+---
+
+## 🧠 Accesos rápidos
+
+* **Solr UI:** [http://localhost:8983](http://localhost:8983)
+* **FastAPI Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+## 💡 Recomendaciones
+
+* No incluyas tu entorno `.venv` en el repositorio (ya está ignorado en `.gitignore`).
+* Puedes reiniciar servicios con:
+
+  ```bash
+  docker compose down && docker compose up -d
+  ```
+* Si cambias el modelo de embeddings, asegúrate de **reindexar** en Milvus.
 
