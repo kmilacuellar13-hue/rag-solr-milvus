@@ -1,12 +1,31 @@
-# Entorno y caches
+# Entorno y cachés
 .venv/
 __pycache__/
 *.py[cod]
 *.ipynb_checkpoints/
-ECHO est  activado.
-# Datos pesados / artefactos
+
+# Datos pesados / artefactos (se ignoran)
 data/**/*.parquet
 data/**/*.feather
-*.log
+data/**/*.csv
+data/**/*.tsv
+
+# ¡Pero conservamos los archivos del corpus!
+!data/corpus/*.json
+!data/corpus/*.jsonl
+
+# Modelos / logs
 models/
 checkpoints/
+*.log
+
+# Reports: conservamos métricas y gráficos
+!reports/**/*.csv
+!reports/**/*.json
+!reports/**/*.png
+!reports/**/*.jpg
+!reports/**/*.svg
+!reports/**/*.pdf
+
+# Basura temporal
+reports/**/*.tmp
