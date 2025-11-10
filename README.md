@@ -183,3 +183,29 @@ python services/indexer/evaluator.py ^
   ```
 * Si cambias el modelo de embeddings, asegúrate de **reindexar** en Milvus.
 
+## Evaluación — Solr vs Milvus (q1–q2, k ∈ {5, 20})
+
+**Conjunto y gold**
+- Pairs evaluados: 61 (57 positivos) a partir de `data/corpus/*.jsonl`.
+- Gold y queries: `data/corpus/gold.jsonl`, `data/corpus/queries.jsonl`.
+
+**Resultados agregados**
+- **Latencia media (ms)**: **Milvus ≈ 7.75** | **Solr ≈ 8.88**.
+- **ROUGE-L (mean / median)**: **Milvus 0.0133 / 0.0164** | **Solr 0.0012 / 0.0003**.
+- **recall@k, mrr, ndcg**: 0.0 (con el *gold* actual y corpus pequeño).
+  
+**Artefactos**
+- CSV final: `reports/final_report.csv`
+- Gráficos: `reports/final_latency.png`, `reports/final_rouge.png`, `reports/final_judge.png`
+
+**Reproducibilidad (post-evaluación)**
+```bash
+python services\indexer\merge_reports.py ^
+  --metrics_csv reports\summary.csv ^
+  --rouge_csv reports\rouge_by_backend.csv ^
+  --judge_csv reports\llm_judge_summary.csv ^
+  --out_dir reports
+
+python services\indexer\plot_final.py ^
+  --final_csv reports\final_report.csv ^
+  --out_dir reports
