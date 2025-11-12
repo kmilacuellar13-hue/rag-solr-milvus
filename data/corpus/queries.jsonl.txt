@@ -1,2 +1,5 @@
-{"qid":"q1","query":"acuerdo de paz y territorios"}
-{"qid":"q2","query":"participación de víctimas en el proceso"}
+{"qid": "1", "query": "{\"id\": \"doc_000000\", \"text\": \"presentación del informe final Hay futuro si hay verdad Presentación del Informe Final"}
+{"qid": "2", "query": "{\"id\": \"doc_000001\", \"text\": \"3continuación de la presentación de los homicidios ocurridos en el conflicto armado, pues"}
+{"qid": "3", "query": "{\"id\": \"doc_000002\", \"text\": \"3En este sentido, las amenazas fueron un mecanismo para silenciar y detener procesos"}
+{"qid": "4", "query": "{\"id\": \"doc_000003\", \"text\": \"3Este tipo de crímenes fueron recurrentes como forma de tortura antes del asesinato"}
+{"qid": "5", "query": "{\"id\": \"doc_000004\", \"text\": \"3Mapa Ciudades con mayor recepción de desplazamiento Fuente: Registro Único de Víctimas Corte"}

@@ -1,3 +1,5 @@
-{"qid":"q1","relevant_ids":[]}
-{"qid":"q2","relevant_ids":[]}
-
+{"qid": "1", "relevant_ids": ["doc_000000"], "ref_answer": "{\"id\": \"doc_000000\", \"text\": \"presentación del informe final Hay futuro si hay verdad Presentación del Informe Final Hay futuro si hay verdad Sobre esta premisa se construyó el Acuerdo de Paz entre el Estado colombiano y las FARC-EP firmado en noviembre"}
+{"qid": "2", "relevant_ids": ["doc_000001"], "ref_answer": "{\"id\": \"doc_000001\", \"text\": \"3continuación de la presentación de los homicidios ocurridos en el conflicto armado, pues las similitudes son evidentes, aun cuando, por fortuna, para miles de personas, su desenlace no fue la muerte de las víctimas La narración con"}
+{"qid": "3", "relevant_ids": ["doc_000002"], "ref_answer": "{\"id\": \"doc_000002\", \"text\": \"3En este sentido, las amenazas fueron un mecanismo para silenciar y detener procesos de denuncia y esclarecimiento Entre y 2009, por ejemplo, en Simacota, Magdalena Medio, jueces, testigos y familiares de las víctimas de la masacre de"}
+{"qid": "4", "relevant_ids": ["doc_000003"], "ref_answer": "{\"id\": \"doc_000003\", \"text\": \"3Este tipo de crímenes fueron recurrentes como forma de tortura antes del asesinato de hombres Este fue el caso de un líder campesino torturado y asesinado en El Palmar, Sucre, el .o de mayo de 1991, presuntamente"}
+{"qid": "5", "relevant_ids": ["doc_000004"], "ref_answer": "{\"id\": \"doc_000004\", \"text\": \"3Mapa Ciudades con mayor recepción de desplazamiento Fuente: Registro Único de Víctimas Corte al .o de enero de 2022 Visualización realizada por el Center for Spatial Research de la Universidad de Columbia Una aproximación al desplazamiento intraurbano"}
