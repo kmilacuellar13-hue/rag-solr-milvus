@@ -1,0 +1,3 @@
+backend,latency_ms_mean,recall_k_mean,mrr_mean,ndcg_mean,rougel_mean,judge_n_pairs,judge_score_mean
+solr,0.0,0.0,0.0,0.0,0.0,0,0.0
+milvus,0.0,0.0,0.0,0.0,0.0,0,0.0
