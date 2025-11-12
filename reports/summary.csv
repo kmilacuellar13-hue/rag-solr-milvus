@@ -4,5 +4,4 @@ k,20
 recall_mean,0.0
 mrr_mean,0.0
 ndcg_mean,0.0
-latency_ms_mean,59.27
-rougeL_mean,0.0
+latency_ms_mean,39.55
