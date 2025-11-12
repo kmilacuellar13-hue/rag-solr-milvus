@@ -1,3 +1,4 @@
+# services/indexer/evaluator.py
 import argparse, json, time, math, pathlib, statistics, requests
 from typing import List, Dict, Any, Optional
 
@@ -72,15 +73,25 @@ def main():
             ref_answer = gold.get("ref_answer")
 
             t0 = time.time()
-            r = requests.get(args.api,
-                             params={"query": query,
-                                     "backend": args.backend,
-                                     "k": args.k},
-                             timeout=120).json()
-            lat = r.get("latency_ms", int((time.time() - t0) * 1000))
-            ids = [s["id"] for s in r.get("sources", []) if "id" in s]
-            pred_answer = r.get("answer", "")
+            # --- Llamada al API del buscador ---
+            resp = requests.get(
+                args.api,
+                params={"query": query, "backend": args.backend, "k": args.k},
+                timeout=120
+            ).json()
 
+            # Algunos backends (o proxys) devuelven una LISTA en vez de un objeto
+            # Estandarizamos a dict tomando el primer elemento si llega como lista.
+            if isinstance(resp, list):
+                resp = resp[0] if resp else {}
+
+            # Campos esperados (con valores por defecto por si faltan)
+            lat = resp.get("latency_ms", int((time.time() - t0) * 1000))
+            sources = resp.get("sources", [])
+            ids = [s.get("id") for s in sources if isinstance(s, dict) and "id" in s]
+            pred_answer = resp.get("answer", "")
+
+            # Métricas
             rec = recall_at_k(ids, gold_ids, k=args.k)
             rr  = mrr(ids, gold_ids)
             nd  = ndcg(ids, gold_ids, k=args.k)
@@ -109,9 +120,9 @@ def main():
     summary = {
         "backend": args.backend,
         "k": args.k,
-        "recall_mean": statistics.mean(agg["recall"]) if agg["recall"] else 0.0,
-        "mrr_mean":    statistics.mean(agg["mrr"])    if agg["mrr"]    else 0.0,
-        "ndcg_mean":   statistics.mean(agg["ndcg"])   if agg["ndcg"]   else 0.0,
+        "recall_mean":     statistics.mean(agg["recall"]) if agg["recall"] else 0.0,
+        "mrr_mean":        statistics.mean(agg["mrr"])    if agg["mrr"]    else 0.0,
+        "ndcg_mean":       statistics.mean(agg["ndcg"])   if agg["ndcg"]   else 0.0,
         "latency_ms_mean": round(statistics.mean(agg["lat_ms"]), 2) if agg["lat_ms"] else 0.0,
     }
     if agg["rougeL"]:

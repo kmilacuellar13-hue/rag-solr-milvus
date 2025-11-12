@@ -1,0 +1,8 @@
+metric,value
+backend,milvus
+k,5
+recall_mean,0.0
+mrr_mean,0.0
+ndcg_mean,0.0
+latency_ms_mean,39.6
+rougeL_mean,0.0
